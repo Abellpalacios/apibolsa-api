@@ -13,7 +13,8 @@ console.log("✅ Servicio de correo (Resend) inicializado.");
 export const sendResetCodeEmail = async (to, code) => {
   try {
     // 'from' debe ser un dominio verificado, pero para probar usa este:
-    const fromEmail = "Bolsa de Empleo <onboarding@resend.dev>";
+    // ¡CORREGIDO! Ahora usas tu dominio verificado
+const fromEmail = "Bolsa de Empleo <noreply@apibolsa.com>";
 
     const { data, error } = await resend.emails.send({
       from: fromEmail,
