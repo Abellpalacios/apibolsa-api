@@ -258,10 +258,10 @@ export const resetPassword = async (req, res) => {
         return res.status(400).json({ message: "Código inválido o expirado" });
       }
 
-      company.password = await bcrypt.hash(newPassword, 10);
-      company.resetCode = undefined;
-      company.resetCodeExpires = undefined;
-      await company.save();
+     company.password = newPassword; // ¡YA NO USAMOS HASH AQUÍ!
+company.resetCode = undefined;
+company.resetCodeExpires = undefined;
+await company.save();
     } else {
       const user = await User.findOne({ email }).select("+password");
       if (!user) {
@@ -272,10 +272,10 @@ export const resetPassword = async (req, res) => {
         return res.status(400).json({ message: "Código inválido o expirado" });
       }
 
-      user.password = await bcrypt.hash(newPassword, 10);
-      user.resetCode = undefined;
-      user.resetCodeExpires = undefined;
-      await user.save();
+     user.password = newPassword; // ¡YA NO USAMOS HASH AQUÍ!
+user.resetCode = undefined;
+user.resetCodeExpires = undefined;
+await user.save();
     }
 
     return res.json({ message: "Contraseña actualizada correctamente" });
