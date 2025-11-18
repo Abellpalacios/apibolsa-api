@@ -1,10 +1,15 @@
 // src/config/env.js
 import dotenv from "dotenv";
 
-const result = dotenv.config();
+// Solo cargar .env cuando NO estás en producción
+if (process.env.NODE_ENV !== "production") {
+  const result = dotenv.config();
 
-if (result.error) {
-  console.error("❌ Error cargando archivo .env:", result.error);
+  if (result.error) {
+    console.warn("⚠️ No se pudo cargar .env local (probablemente no existe).");
+  } else {
+    console.log("✅ Variables de entorno cargadas desde .env");
+  }
 } else {
-  console.log("✅ Variables de entorno cargadas");
+  console.log("ℹ️ NODE_ENV=production: usando variables de entorno del servidor (Render)");
 }
