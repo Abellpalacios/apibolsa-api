@@ -1,9 +1,11 @@
+// src/models/Company.js
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
 const companySchema = new mongoose.Schema(
   {
     nombre: { type: String, required: true, trim: true },
+
     email: {
       type: String,
       required: true,
@@ -11,17 +13,20 @@ const companySchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
+
     password: { type: String, required: true, minlength: 6, select: false },
-    sector: String,
-    tamano: String,
-    telefono: String,
-    direccion: String,
-    sitioWeb: String,
-    descripcion: String,
+
+    sector: { type: String, default: null },
+    tamano: { type: String, default: null },
+    telefono: { type: String, default: null },
+    direccion: { type: String, default: null },
+    sitioWeb: { type: String, default: null },
+    descripcion: { type: String, default: null },
+
     resetCode: String,
     resetCodeExpires: Date,
   },
-  { timestamps: true, collection: "companies" }
+  { timestamps: true, collection: "empresas" }
 );
 
 companySchema.pre("save", async function (next) {

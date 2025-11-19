@@ -2,25 +2,11 @@
 import User from "../models/User.js";
 import Company from "../models/Company.js";
 
-/**
- * PUT /api/user/profile
- * Actualiza el perfil de usuario (candidato) o empresa autenticada.
- * Android envía:
- * {
- *   name?,
- *   title?,          (puesto o área)
- *   location?,       (ciudad)
- *   phone?,
- *   about?,
- *   userType: "candidato" / "empresa"
- * }
- */
 export const updateProfile = async (req, res) => {
   try {
     const body = req.body || {};
     const { name, title, location, phone, about } = body;
 
-    // Validación: si no hay campos
     if (
       name === undefined &&
       title === undefined &&
@@ -28,19 +14,15 @@ export const updateProfile = async (req, res) => {
       phone === undefined &&
       about === undefined
     ) {
-      return res
-        .status(400)
-        .json({ message: "No se enviaron datos para actualizar" });
+      return res.status(400).json({ message: "No se enviaron datos para actualizar" });
     }
 
-    // ============================================
-    // ✔ PERFIL DEL CANDIDATO
-    // ============================================
+    // ========================
+    // CANDIDATO
+    // ========================
     if (req.user) {
       const user = await User.findById(req.user.id);
-      if (!user) {
-        return res.status(404).json({ message: "Usuario no encontrado" });
-      }
+      if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
 
       if (name !== undefined) user.name = name;
       if (title !== undefined) user.title = title;
@@ -58,18 +40,17 @@ export const updateProfile = async (req, res) => {
         email: saved.email,
         phone: saved.telefono,
         about: saved.about,
+        cvUrl: saved.cvUrl,
         userType: "candidato",
       });
     }
 
-    // ============================================
-    // ✔ PERFIL DE LA EMPRESA
-    // ============================================
+    // ========================
+    // EMPRESA
+    // ========================
     if (req.company) {
       const company = await Company.findById(req.company.id);
-      if (!company) {
-        return res.status(404).json({ message: "Empresa no encontrada" });
-      }
+      if (!company) return res.status(404).json({ message: "Empresa no encontrada" });
 
       if (name !== undefined) company.nombre = name;
       if (title !== undefined) company.sector = title;
@@ -94,9 +75,6 @@ export const updateProfile = async (req, res) => {
     return res.status(401).json({ message: "No autenticado" });
   } catch (err) {
     console.error("Error en updateProfile:", err);
-    return res.status(500).json({
-      message: "Error al actualizar perfil",
-      error: err.message,
-    });
+    return res.status(500).json({ message: "Error al actualizar perfil", error: err.message });
   }
 };

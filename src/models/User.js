@@ -1,3 +1,4 @@
+// src/models/User.js
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
@@ -13,7 +14,7 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
 
-    telefono: String,
+    telefono: { type: String, default: "" },
 
     password: { type: String, required: true, minlength: 6, select: false },
 
@@ -23,21 +24,24 @@ const userSchema = new mongoose.Schema(
       default: "candidato",
     },
 
-    // --- CAMPOS PARA RESET PASSWORD ---
-    resetCode: String,
-    resetCodeExpires: Date,
-
-    // --- NUEVO: RUTA DEL CV ---
-    cvUrl: { type: String, default: null },
-
-    // --- CAMPOS OPCIONALES (perfil) ---
+    // -------------------------
+    // CAMPOS NUEVOS DEL PERFIL
+    // -------------------------
     title: { type: String, default: null },
     location: { type: String, default: null },
-    about: { type: String, default: null }
+    about: { type: String, default: null },
+
+    // CV — URL del archivo subido
+    cvUrl: { type: String, default: null },
+
+    // Reset password
+    resetCode: String,
+    resetCodeExpires: Date,
   },
   { timestamps: true, collection: "usuarios" }
 );
 
+// Hash del password
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   const salt = await bcrypt.genSalt(10);

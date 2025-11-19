@@ -12,29 +12,46 @@ import savedJobRoutes from "./routes/savedJobRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import interviewRoutes from "./routes/interviewRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
-import userRoutes from "./routes/userRoutes.js";   // 👈 NUEVO
+import userRoutes from "./routes/userRoutes.js";
+import cvRoutes from "./routes/cvRoutes.js";        //  👈 NUEVO — subir CV
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middlewares
-app.use(express.json());
+// ----------------------------------------
+// MIDDLEWARES
+// ----------------------------------------
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
 app.use(
   cors({
-    origin: "*",
+    origin: "*",     // Android Studio permite acceso total
     credentials: false,
   })
 );
 
-// DB
+// ----------------------------------------
+// DATABASE
+// ----------------------------------------
 connectDB();
 
+// ----------------------------------------
+// STATIC FILES (para abrir CV desde Android)
+// ----------------------------------------
+app.use("/uploads", express.static("uploads"));
+
+// ----------------------------------------
+// RUTA DE PRUEBA
+// ----------------------------------------
 app.get("/", (req, res) => {
   res.send("API Bolsa de Empleo funcionando ✅");
 });
 
-// Rutas
+// ----------------------------------------
+// ROUTES
+// ----------------------------------------
 app.use("/api/auth", authRoutes);
 app.use("/api/jobs", jobRoutes);
 app.use("/api/applications", applicationRoutes);
@@ -42,8 +59,12 @@ app.use("/api/saved-jobs", savedJobRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/interviews", interviewRoutes);
 app.use("/api/messages", messageRoutes);
-app.use("/api/user", userRoutes);   // 👈 AQUÍ SE MONTA /api/user/profile
+app.use("/api/user", userRoutes);     // perfil candidato/empresa
+app.use("/api", cvRoutes);            // 👈 SUBIR CV (POST /api/upload-cv)
 
+// ----------------------------------------
+// START SERVER
+// ----------------------------------------
 app.listen(PORT, () => {
   console.log(`🚀 Servidor escuchando en el puerto ${PORT}`);
   console.log("🌍 Entorno:", process.env.NODE_ENV || "desarrollo");
