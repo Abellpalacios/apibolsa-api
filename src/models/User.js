@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 const userSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true },
+
     email: {
       type: String,
       required: true,
@@ -11,15 +12,28 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
+
     telefono: String,
+
     password: { type: String, required: true, minlength: 6, select: false },
+
     tipo: {
       type: String,
       enum: ["candidato", "empresa", "admin"],
       default: "candidato",
     },
+
+    // --- CAMPOS PARA RESET PASSWORD ---
     resetCode: String,
     resetCodeExpires: Date,
+
+    // --- NUEVO: RUTA DEL CV ---
+    cvUrl: { type: String, default: null },
+
+    // --- CAMPOS OPCIONALES (perfil) ---
+    title: { type: String, default: null },
+    location: { type: String, default: null },
+    about: { type: String, default: null }
   },
   { timestamps: true, collection: "usuarios" }
 );

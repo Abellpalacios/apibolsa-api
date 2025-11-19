@@ -2,18 +2,96 @@
 import User from "../models/User.js";
 import Company from "../models/Company.js";
 
+/**
+ * PUT /api/user/profile
+ * Actualiza el perfil de usuario (candidato) o empresa autenticada.
+ * Android envía:
+ * {
+ *   name?,
+ *   title?,          (puesto o área)
+ *   location?,       (ciudad)
+ *   phone?,
+ *   about?,
+ *   userType: "candidato" / "empresa"
+ * }
+ */
 export const updateProfile = async (req, res) => {
   try {
-    // 👇 Evita que truene si req.body es undefined
     const body = req.body || {};
     const { name, title, location, phone, about } = body;
 
-    // si no hay ningún dato, respondemos 400 y listo
-    if (!name && !title && !location && !phone && !about) {
-      return res.status(400).json({ message: "No se enviaron datos para actualizar" });
+    // Validación: si no hay campos
+    if (
+      name === undefined &&
+      title === undefined &&
+      location === undefined &&
+      phone === undefined &&
+      about === undefined
+    ) {
+      return res
+        .status(400)
+        .json({ message: "No se enviaron datos para actualizar" });
     }
 
-    // ... resto del código que ya teníamos (buscar user/company, asignar campos, guardar, etc.)
+    // ============================================
+    // ✔ PERFIL DEL CANDIDATO
+    // ============================================
+    if (req.user) {
+      const user = await User.findById(req.user.id);
+      if (!user) {
+        return res.status(404).json({ message: "Usuario no encontrado" });
+      }
+
+      if (name !== undefined) user.name = name;
+      if (title !== undefined) user.title = title;
+      if (location !== undefined) user.location = location;
+      if (phone !== undefined) user.telefono = phone;
+      if (about !== undefined) user.about = about;
+
+      const saved = await user.save();
+
+      return res.json({
+        id: saved._id,
+        name: saved.name,
+        title: saved.title,
+        location: saved.location,
+        email: saved.email,
+        phone: saved.telefono,
+        about: saved.about,
+        userType: "candidato",
+      });
+    }
+
+    // ============================================
+    // ✔ PERFIL DE LA EMPRESA
+    // ============================================
+    if (req.company) {
+      const company = await Company.findById(req.company.id);
+      if (!company) {
+        return res.status(404).json({ message: "Empresa no encontrada" });
+      }
+
+      if (name !== undefined) company.nombre = name;
+      if (title !== undefined) company.sector = title;
+      if (location !== undefined) company.direccion = location;
+      if (phone !== undefined) company.telefono = phone;
+      if (about !== undefined) company.descripcion = about;
+
+      const saved = await company.save();
+
+      return res.json({
+        id: saved._id,
+        name: saved.nombre,
+        title: saved.sector,
+        location: saved.direccion,
+        email: saved.email,
+        phone: saved.telefono,
+        about: saved.descripcion,
+        userType: "empresa",
+      });
+    }
+
+    return res.status(401).json({ message: "No autenticado" });
   } catch (err) {
     console.error("Error en updateProfile:", err);
     return res.status(500).json({
