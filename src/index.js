@@ -12,7 +12,7 @@ import savedJobRoutes from "./routes/savedJobRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import interviewRoutes from "./routes/interviewRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
-import userRoutes from "./routes/userRoutes.js";   // 🔹 NUEVO
+import userRoutes from "./routes/userRoutes.js";   // 👈 NUEVO
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -20,7 +20,6 @@ const PORT = process.env.PORT || 5000;
 // Middlewares
 app.use(express.json());
 app.use(cookieParser());
-
 app.use(
   cors({
     origin: "*",
@@ -31,12 +30,11 @@ app.use(
 // DB
 connectDB();
 
-// Ruta de prueba
 app.get("/", (req, res) => {
   res.send("API Bolsa de Empleo funcionando ✅");
 });
 
-// Rutas principales
+// Rutas
 app.use("/api/auth", authRoutes);
 app.use("/api/jobs", jobRoutes);
 app.use("/api/applications", applicationRoutes);
@@ -44,9 +42,8 @@ app.use("/api/saved-jobs", savedJobRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/interviews", interviewRoutes);
 app.use("/api/messages", messageRoutes);
-app.use("/api/user", userRoutes);   // 🔹 AQUÍ MONTAMOS /api/user/profile
+app.use("/api/user", userRoutes);   // 👈 AQUÍ SE MONTA /api/user/profile
 
-// Arrancar servidor
 app.listen(PORT, () => {
   console.log(`🚀 Servidor escuchando en el puerto ${PORT}`);
   console.log("🌍 Entorno:", process.env.NODE_ENV || "desarrollo");
